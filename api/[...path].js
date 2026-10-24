@@ -27,6 +27,9 @@ module.exports = (req, res) => {
     const configuredBackend = new URL(backendUrl);
     if (
       !["http:", "https:"].includes(configuredBackend.protocol) ||
+      configuredBackend.pathname !== "/" ||
+      configuredBackend.search ||
+      configuredBackend.hash ||
       target.origin !== configuredBackend.origin ||
       !target.pathname.startsWith("/api/")
     ) {
