@@ -1,0 +1,115 @@
+services:
+  openwa:
+    build:
+      context: ../../OpenWA
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    mem_limit: 2g
+    pids_limit: 2048
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - KILL
+      - SETGID
+      - SETUID
+    read_only: true
+    tmpfs:
+      - /tmp
+    ports:
+      - "127.0.0.1:2785:2785"
+    environment:
+      NODE_ENV: production
+      TZ: Asia/Kolkata
+      HOME: /tmp
+      XDG_CONFIG_HOME: /tmp/.config
+      XDG_CACHE_HOME: /tmp/.cache
+      PORT: "2785"
+      AUTO_START_SESSIONS: "true"
+      DATABASE_TYPE: sqlite
+      DATABASE_SYNCHRONIZE: "false"
+      SESSION_DATA_PATH: /app/data/sessions
+      STORAGE_TYPE: local
+      STORAGE_LOCAL_PATH: /app/data/media
+      PLUGINS_DIR: /app/data/plugins
+      PUPPETEER_HEADLESS: "true"
+      PUPPETEER_ARGS: --no-sandbox,--disable-setuid-sandbox,--disable-dev-shm-usage,--disable-gpu
+    volumes:
+      - openwa_data:/app/data
+    networks:
+      - backend
+
+  sibi:
+    build:
+      context: ../Admin
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      APP_TIMEZONE: Asia/Kolkata
+      ADMIN_NAME: ${ADMIN_NAME:?Set ADMIN_NAME in deploy/.env}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?Set ADMIN_EMAIL in deploy/.env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in deploy/.env}
+      SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in deploy/.env}
+      DATABASE_FILE: /app/data/elevate.sqlite
+      TRUST_PROXY: "1"
+      WHATSAPP_PROVIDER: openwa
+      OPENWA_API_URL: http://openwa:2785/api
+      OPENWA_API_KEY: ${OPENWA_API_KEY:-}
+      OPENWA_SESSION_ID: ${OPENWA_SESSION_ID:-}
+    volumes:
+      - sibi_data:/app/data
+    expose:
+      - "3000"
+    depends_on:
+      openwa:
+        condition: service_started
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    networks:
+      - backend
+      - web
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?Set SITE_DOMAIN in deploy/.env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      sibi:
+        condition: service_healthy
+    networks:
+      - web
+
+volumes:
+  openwa_data:
+  sibi_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  backend:
+  web:

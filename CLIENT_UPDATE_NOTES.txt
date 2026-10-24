@@ -1,0 +1,40 @@
+SIBI SPORTS CLUB — CLIENT POLISH UPDATE
+=======================================
+
+This update prioritises the first things a prospective member or client is likely to check: clear pricing, straightforward enquiry actions, trustworthy reviews, mobile usability and a clean first-run experience.
+
+CHANGES IN THIS VERSION
+-----------------------
+1. Rebuilt membership pricing so Strength Training and Strength & Cardio each show all four durations in a simple comparison table.
+2. Added the regular price and offer price from the client-provided price cards. The figures are visible without needing to hover or flip a card.
+3. Kept Personal Training and Cardio as separate enquiry packages. Their prices are not presented as official because no confirmed price list was supplied for those separate packages.
+4. Made every package CTA open the internal enquiry form and prefill the package interest.
+5. Reworked the reviews section into three cards per page with Previous/Next and page dots, so the page does not grow indefinitely as more reviews are added.
+6. Removed placeholder five-star ratings. The review area is clearly framed as a place for genuine member stories; it does not invent customer quotes or ratings.
+7. Added keyboard focus states, disabled states for pagination, responsive layouts and reduced-motion handling for the updated areas.
+8. Cleared stale login sessions and outdated sample reminders/announcements from the local starter database. Existing trainer profiles and message templates are retained.
+9. Updated asset version strings so browsers fetch the revised CSS and JavaScript.
+10. Smoke-tested the local server: the homepage and trainer API both returned HTTP 200.
+
+MEMBERSHIP PRICES DISPLAYED
+---------------------------
+Strength Training:
+- 1 month: Regular ₹900 · Offer ₹900
+- 3 months: Regular ₹2,700 · Offer ₹2,000
+- 6 months: Regular ₹5,400 · Offer ₹4,000
+- 12 months: Regular ₹10,800 · Offer ₹5,999
+
+Strength & Cardio:
+- 1 month: Regular ₹1,400 · Offer ₹1,400
+- 3 months: Regular ₹4,200 · Offer ₹3,500
+- 6 months: Regular ₹8,400 · Offer ₹6,000
+- 12 months: Regular ₹16,800 · Offer ₹9,999
+
+STARTING THE WEBSITE ON WINDOWS
+-------------------------------
+Double-click START_WINDOWS.cmd in the Sibi_Sports_Club_FINAL folder. The first launch requires Node.js LTS and an internet connection to install server dependencies. Keep the command window open while using the local site.
+
+Local URL: http://localhost:3000
+Before the first launch, copy Admin\.env.example to Admin\.env and set a unique admin email, password, and session secret. Do not publish Admin\.env.
+
+Before public deployment, configure unique production credentials and SESSION_SECRET in protected hosting settings, configure HTTPS and set up a persistent always-on server. Automatic WhatsApp delivery can use the separate OpenWA gateway (`WHATSAPP_PROVIDER=openwa`) or Meta WhatsApp Cloud API; scheduled messages send only while the Sibi worker and configured provider are running. See HOSTING_WHATSAPP_SETUP.txt for local and hosted OpenWA setup and its account/policy risks.

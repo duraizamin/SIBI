@@ -1,0 +1,108 @@
+SIBI SPORTS CLUB — OPENWA WHATSAPP SETUP
+=======================================
+
+OpenWA is a separate WhatsApp API gateway. Sibi Sports Club calls its REST API
+from the Node.js server; it does not embed OpenWA or expose its API key to the
+browser. OpenWA connects using a linked WhatsApp Web session.
+
+LOCAL WINDOWS SETUP
+-------------------
+1. Install Docker Desktop, then clone https://github.com/rmyndharis/OpenWA.
+2. In PowerShell, change to the cloned OpenWA folder and run:
+      docker compose up -d
+   The OpenWA dashboard/API is available at http://localhost:2785.
+3. Get the initial API key from the OpenWA startup log or:
+      docker exec openwa-api cat /app/data/.api-key
+   In OpenWA, create an OPERATOR key limited to the Sibi session if possible.
+4. In the OpenWA dashboard, create a WhatsApp session and link the club's
+   WhatsApp account using its QR code. Keep this gateway running.
+5. Copy Admin\.env.example to Admin\.env. Set:
+      WHATSAPP_PROVIDER=openwa
+      OPENWA_API_URL=http://localhost:2785/api
+      OPENWA_API_KEY=<your server-side OpenWA operator key>
+      OPENWA_SESSION_ID=<session ID shown by OpenWA>
+6. Restart Sibi Sports Club and open Admin → Message center. The WhatsApp
+   sender card should report that OpenWA is connected and ready.
+
+The root START_WINDOWS.cmd starts only Sibi Sports Club, not OpenWA. Start the
+OpenWA Docker service separately and leave it running.
+
+PERMANENT CLOUD HOSTING
+-----------------------
+To avoid any runtime dependency on a personal computer, run the Sibi website,
+its scheduled-message worker, and OpenWA together on an always-on VPS with
+persistent storage. The deployment files and full instructions are in
+deploy\README.md. The VPS needs a public hostname for HTTPS; OpenWA remains
+private to the server and Sibi calls it over the Docker network.
+
+Pair the WhatsApp account with the OpenWA instance on the VPS, not the local
+Windows instance. Store the VPS OpenWA API key and session ID in the VPS
+deployment environment only. After deployment, Sibi can send immediate and
+scheduled messages while your computer is off.
+
+Oracle Cloud Always Free compute may be suitable, but Always Free capacity,
+account approval and uninterrupted availability are not guaranteed. Oracle
+publishes idle-instance reclamation criteria. Review current provider terms and
+keep backups of both application data volumes.
+
+TEMPORARY TUNNEL FOR TESTING ONLY
+---------------------------------
+A Cloudflare Quick Tunnel can temporarily connect a Render-hosted Sibi service
+to OpenWA running on a personal computer. It is not a permanent hosting setup:
+the computer, OpenWA and tunnel must stay online, and the temporary tunnel URL
+changes when restarted.
+
+1. Install Docker Desktop and cloudflared.
+2. Start OpenWA on your computer using the local setup above. Create a session
+   and link WhatsApp from the OpenWA dashboard by scanning its QR code.
+3. Create an OPERATOR API key restricted to that session if possible.
+4. In a second terminal, run:
+      cloudflared tunnel --url http://localhost:2785
+   Copy the HTTPS trycloudflare.com URL printed by the command.
+5. In the Sibi service's Render environment, set:
+      WHATSAPP_PROVIDER=openwa
+      OPENWA_API_URL=https://<current-tunnel-host>/api
+      OPENWA_API_KEY=<session-scoped OPERATOR key>
+      OPENWA_SESSION_ID=<OpenWA session ID>
+   Restart Sibi Sports Club and check Admin > Message center for the connection
+   status.
+
+When the tunnel URL changes, update OPENWA_API_URL in Render. If your computer
+sleeps, shuts down, or loses internet, Sibi cannot send through OpenWA. Do not
+use a development API key or expose the API key in frontend files. For a stable
+always-on setup, a server with persistent storage is required. Cloudflare Quick
+Tunnels are explicitly intended for testing/development and have no uptime
+guarantee: https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/
+
+SENDING BEHAVIOR
+----------------
+- "Send now" sends each selected message through OpenWA immediately.
+- Scheduled messages are sent automatically by Sibi's server worker when their
+  scheduled time arrives. Both Sibi Sports Club and OpenWA must be running.
+- If automatic delivery is not configured, due reminders are prepared for
+  manual sending instead; the app will not claim they were sent.
+- Delivery history marks a message sent when OpenWA accepts it. WhatsApp may
+  deliver it later, fail it, or not deliver it; acceptance is not a delivery
+  receipt.
+- OpenWA image captions must be 1024 characters or fewer.
+- Keep one Sibi server instance for the SQLite-backed scheduler unless you add
+  distributed locking/queueing. Multiple instances can duplicate scheduled
+  sends.
+- Test with one consenting recipient before sending to a group. Send only to
+  people who opted in, pace bulk sends, and comply with WhatsApp terms/laws.
+
+OPENWA ACCOUNT AND DELIVERY RISKS
+---------------------------------
+OpenWA is an unofficial gateway using reverse-engineered WhatsApp clients; it is
+not Meta's official WhatsApp Cloud API. WhatsApp may change or restrict linked
+sessions, and account restrictions are possible. Use a club-approved account,
+review OpenWA's current risk guidance, and keep a fallback for important
+communications:
+https://github.com/rmyndharis/OpenWA#safe-sending-guidelines
+
+OPTIONAL OFFICIAL META CLOUD API
+--------------------------------
+To use Meta Cloud API instead, set WHATSAPP_PROVIDER=cloud_api and configure
+WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID on the Sibi server. Existing
+Meta template and webhook settings remain available. Never place provider
+credentials in frontend files, commit Admin\.env, or share API keys publicly.
