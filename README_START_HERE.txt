@@ -60,3 +60,19 @@ OpenWA is an unofficial WhatsApp Web gateway and may carry account restrictions
 or delivery risk. Send only to opted-in recipients, test first, and review
 HOSTING_WHATSAPP_SETUP.txt. Meta WhatsApp Cloud API remains available as an
 alternative provider. Never commit Admin\.env or expose provider keys.
+
+VERCEL WEBSITE + PERSISTENT BACKEND
+-----------------------------------
+The Vercel configuration serves Admin\public as the website and forwards /api
+requests through the Vercel API proxy. Deploy the Node backend on a persistent
+host using render.yaml (or deploy\compose.yaml on a VPS), then set the Vercel
+production environment variable SIBI_API_URL to the backend's base HTTPS URL.
+For Render, use its generated service URL, for example
+https://your-sibi-service.onrender.com. Set the Vercel project's Root Directory
+to the repository root, not Admin, so Vercel can see vercel.json and api\.
+
+OpenWA must also remain running on a persistent host and have persistent
+session storage. Configure its HTTPS API URL, API key, and session ID only in
+the persistent Sibi backend's protected environment; never expose the key in
+Vercel frontend code. The Render service in render.yaml requires a paid
+persistent plan for the SQLite disk and scheduler.

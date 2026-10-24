@@ -1,5 +1,11 @@
 # Sibi Sports Club + OpenWA VPS deployment
 
+For a Vercel-hosted static website with a separately hosted Sibi backend, see
+the "Vercel website + persistent backend" section in
+[README_START_HERE.txt](../README_START_HERE.txt). Do not deploy OpenWA itself
+to Vercel; OpenWA needs a continuously running Docker host and persistent
+session storage.
+
 This stack runs the Sibi website, its SQLite-backed scheduler, OpenWA and HTTPS
 on one Linux VPS. The VPS keeps the database and WhatsApp session in Docker
 volumes; the running service does not depend on a personal computer or tunnel.
