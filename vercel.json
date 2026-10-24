@@ -1,6 +1,7 @@
 {
   "version": 2,
-  "buildCommand": null,
+  "framework": "other",
+  "buildCommand": "echo Static website assets are ready",
   "outputDirectory": "Admin/public",
   "cleanUrls": false
 }
