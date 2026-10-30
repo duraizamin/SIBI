@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/health?__route=:path*"
+      "destination": "/api/index?__route=:path*"
     }
   ],
   "cleanUrls": false
