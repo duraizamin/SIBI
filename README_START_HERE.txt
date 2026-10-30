@@ -46,27 +46,38 @@ The default deployment uses manual WhatsApp handling and does not need OpenWA.
 Messages can be prepared or marked complete manually; automatic sending is
 disabled. The Vercel website uses the persistent backend described below.
 
-If you later want automated WhatsApp delivery, configure Meta WhatsApp Cloud
-API on the backend, or use the optional OpenWA setup in
-HOSTING_WHATSAPP_SETUP.txt. Never put provider credentials in Vercel frontend
-code, commit Admin\.env, or expose provider keys.
+The Vercel deployment does not configure OpenWA or Meta WhatsApp credentials.
+The separate WhatsApp guide is for local or legacy deployments only. Never put
+provider credentials in Vercel frontend code, commit Admin\.env, or expose
+provider keys.
 
-VERCEL FRONTEND + FREE PERSISTENT BACKEND
------------------------------------------
-The public website is deployed to Vercel. Its API proxy forwards /api requests
-to the persistent Sibi backend. For a no-OpenWA setup that keeps the existing
-Express app, SQLite database and scheduler, run the backend on an
-Always-Free-eligible Oracle Cloud VM using
-deploy\compose.vercel-backend.yaml. See
-deploy\README_VERCEL_ORACLE.md for VM, DNS and Vercel environment setup.
+VERCEL FRONTEND + NEON DATABASE
+--------------------------------
+The Vercel deployment uses Vercel Functions for the API and Neon Postgres for
+persistent members, enquiries, trainers, payments, message history and login
+sessions. It starts with a fresh database; the local SQLite database is not
+automatically imported.
 
-Set SIBI_API_URL in the Vercel project's Production environment to the backend
-HTTPS origin (for example https://api.sibisportsclub.com), then redeploy. The
-backend uses WHATSAPP_PROVIDER=manual; automatic WhatsApp delivery is disabled,
-but messages can be prepared for manual handling.
+To configure a fresh deployment:
+1. Create a Neon Postgres project and copy its pooled connection string.
+2. In Vercel, open Project Settings > Environment Variables and add:
+   - DATABASE_URL: the Neon connection string
+   - ADMIN_NAME: Sibi Administrator (optional)
+   - ADMIN_EMAIL: the administrator login email
+   - ADMIN_PASSWORD: a unique password of at least 12 characters
+   - SESSION_SECRET: a unique random secret of at least 32 characters
+3. Keep these values private, apply them to Production (and Preview if needed),
+   then redeploy. The database schema and initial admin account are created
+   automatically when the API is first used.
+4. Verify https://YOUR-DOMAIN/api/health reports database connected, then sign
+   in with the configured admin email and password.
 
-Vercel can also host serverless backends, but this app's existing SQLite file,
-database-backed sessions and always-running scheduler cannot be moved there
-unchanged. Converting it to serverless requires a persistent database and
-scheduled-job redesign. Do not put backend credentials in Vercel frontend code
-or commit Admin\.env.
+OpenWA, Meta WhatsApp delivery, webhook handling and automatic scheduled
+WhatsApp sending are disabled on Vercel. Admin/member sign-in and the rest of
+the application remain enabled. Messages can be prepared for manual sending;
+scheduled items remain saved but paused and are never marked sent automatically.
+Local Windows use continues to run the existing SQLite Express server.
+
+For the public domain, point the GoDaddy DNS records to the values shown under
+Vercel > Project Settings > Domains. Do not set SIBI_API_URL: Vercel serves
+the API directly and uses DATABASE_URL for Neon.

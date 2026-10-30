@@ -1,5 +1,9 @@
 # Vercel frontend + Oracle VM backend (without OpenWA)
 
+> Legacy alternative only. The selected deployment is Vercel Functions + Neon
+> Postgres; see [README_START_HERE.txt](../README_START_HERE.txt). An Oracle VM
+> is not needed for that setup.
+
 This deployment keeps the public website on Vercel and runs the existing
 Express/SQLite backend on an Oracle Cloud VM. The backend's SQLite database and
 scheduled-message worker stay on the VM's persistent Docker volume. WhatsApp

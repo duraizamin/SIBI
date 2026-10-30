@@ -1,12 +1,9 @@
-# Sibi Sports Club VPS deployment options
+# Sibi Sports Club deployment notes
 
-For the Vercel website with a persistent Oracle VM backend and no OpenWA, use
-[README_VERCEL_ORACLE.md](README_VERCEL_ORACLE.md) and
-`compose.vercel-backend.yaml`.
-
-For a Vercel-hosted static website with a separately hosted Sibi backend, see
-the "Vercel website without OpenWA" section in
-[README_START_HERE.txt](../README_START_HERE.txt).
+The current deployment target is Vercel Functions with Neon Postgres. Follow
+the Vercel + Neon setup in [README_START_HERE.txt](../README_START_HERE.txt).
+The Oracle VM documents below are retained only for an optional legacy setup;
+they are not required for the Vercel deployment.
 
 The legacy `compose.yaml` stack below runs Sibi, OpenWA and HTTPS together on
 one Linux VPS. OpenWA needs a continuously running Docker host and persistent

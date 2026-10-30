@@ -1,0 +1,12 @@
+{
+  "name": "sibi-sports-club-vercel",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20 <23"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.2.0",
+    "bcryptjs": "^2.4.3"
+  }
+}
