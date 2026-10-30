@@ -42,37 +42,28 @@ Never publish Admin\.env, admin credentials, or session secrets. Configure uniqu
 
 WHATSAPP MESSAGE DELIVERY SETUP
 -------------------------------
-OpenWA integration supports immediate messages and automatic scheduled reminders.
-OpenWA runs as a separate service and links to WhatsApp using a QR code. See
-HOSTING_WHATSAPP_SETUP.txt for local Windows and hosted setup steps.
+The default deployment uses manual WhatsApp handling and does not need OpenWA.
+Messages can be prepared or marked complete manually; automatic sending is
+disabled. The Vercel website uses the persistent backend described below.
 
-For local use, run OpenWA separately (for example with Docker Desktop), set
-OPENWA_API_URL=http://localhost:2785/api, OPENWA_API_KEY, and
-OPENWA_SESSION_ID in Admin\.env, then restart Sibi Sports Club.
+If you later want automated WhatsApp delivery, configure Meta WhatsApp Cloud
+API on the backend, or use the optional OpenWA setup in
+HOSTING_WHATSAPP_SETUP.txt. Never put provider credentials in Vercel frontend
+code, commit Admin\.env, or expose provider keys.
 
-For a no-hosting-cost setup with Sibi on Render, run OpenWA on your computer and
-use a Cloudflare Quick Tunnel. Set its HTTPS URL, the session-scoped operator
-key, and session ID in Sibi's Render environment. Your computer and tunnel must
-stay online, and the temporary URL changes when restarted. See
-HOSTING_WHATSAPP_SETUP.txt for steps and limitations.
-
-OpenWA is an unofficial WhatsApp Web gateway and may carry account restrictions
-or delivery risk. Send only to opted-in recipients, test first, and review
-HOSTING_WHATSAPP_SETUP.txt. Meta WhatsApp Cloud API remains available as an
-alternative provider. Never commit Admin\.env or expose provider keys.
-
-VERCEL WEBSITE + PERSISTENT BACKEND
------------------------------------
-The Vercel configuration serves Admin\public as the website and forwards /api
-requests through the Vercel API proxy. Deploy the Node backend on a persistent
-host using render.yaml (or deploy\compose.yaml on a VPS), then set the Vercel
+VERCEL WEBSITE WITHOUT OPENWA
+-----------------------------
+Vercel serves the static website from Admin\public. The admin pages and enquiry
+form also need the Node backend for login, data storage and API requests; the
+Vercel API proxy forwards /api requests to that backend. Deploy the backend
+using render.yaml (or deploy\compose.yaml on a VPS), then set the Vercel
 production environment variable SIBI_API_URL to the backend's base HTTPS URL.
 For Render, use its generated service URL, for example
 https://your-sibi-service.onrender.com. Set the Vercel project's Root Directory
 to the repository root, not Admin, so Vercel can see vercel.json and api\.
 
-OpenWA must also remain running on a persistent host and have persistent
-session storage. Configure its HTTPS API URL, API key, and session ID only in
-the persistent Sibi backend's protected environment; never expose the key in
-Vercel frontend code. The Render service in render.yaml requires a paid
-persistent plan for the SQLite disk and scheduler.
+The Render configuration selects manual WhatsApp handling and does not require
+OpenWA. Messages can be prepared or marked complete manually; automatic
+WhatsApp sending is not available in this configuration. The backend needs a
+persistent plan and disk for its SQLite database and scheduled-message worker.
+Never put backend credentials in Vercel frontend code.

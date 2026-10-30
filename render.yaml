@@ -31,15 +31,7 @@ services:
       - key: ADMIN_PASSWORD
         generateValue: true
       - key: WHATSAPP_PROVIDER
-        value: openwa
-      # Set this to the HTTPS URL of your OpenWA gateway, ending in /api.
-      # For a free development setup, use the current Cloudflare Quick Tunnel URL.
-      - key: OPENWA_API_URL
-        sync: false
-      - key: OPENWA_API_KEY
-        sync: false
-      - key: OPENWA_SESSION_ID
-        sync: false
+        value: manual
       - key: WHATSAPP_ACCESS_TOKEN
         sync: false
       - key: WHATSAPP_PHONE_NUMBER_ID
