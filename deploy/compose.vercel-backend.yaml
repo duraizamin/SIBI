@@ -1,0 +1,61 @@
+services:
+  sibi:
+    build:
+      context: ../Admin
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      APP_TIMEZONE: Asia/Kolkata
+      ADMIN_NAME: ${ADMIN_NAME:?Set ADMIN_NAME in deploy/.env}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?Set ADMIN_EMAIL in deploy/.env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in deploy/.env}
+      SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in deploy/.env}
+      DATABASE_FILE: /app/data/elevate.sqlite
+      TRUST_PROXY: "1"
+      WHATSAPP_PROVIDER: manual
+    volumes:
+      - sibi_data:/app/data
+    expose:
+      - "3000"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    networks:
+      - web
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?Set SITE_DOMAIN in deploy/.env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      sibi:
+        condition: service_healthy
+    networks:
+      - web
+
+volumes:
+  sibi_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  web:

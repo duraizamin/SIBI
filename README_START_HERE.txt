@@ -51,19 +51,22 @@ API on the backend, or use the optional OpenWA setup in
 HOSTING_WHATSAPP_SETUP.txt. Never put provider credentials in Vercel frontend
 code, commit Admin\.env, or expose provider keys.
 
-VERCEL WEBSITE WITHOUT OPENWA
------------------------------
-Vercel serves the static website from Admin\public. The admin pages and enquiry
-form also need the Node backend for login, data storage and API requests; the
-Vercel API proxy forwards /api requests to that backend. Deploy the backend
-using render.yaml (or deploy\compose.yaml on a VPS), then set the Vercel
-production environment variable SIBI_API_URL to the backend's base HTTPS URL.
-For Render, use its generated service URL, for example
-https://your-sibi-service.onrender.com. Set the Vercel project's Root Directory
-to the repository root, not Admin, so Vercel can see vercel.json and api\.
+VERCEL FRONTEND + FREE PERSISTENT BACKEND
+-----------------------------------------
+The public website is deployed to Vercel. Its API proxy forwards /api requests
+to the persistent Sibi backend. For a no-OpenWA setup that keeps the existing
+Express app, SQLite database and scheduler, run the backend on an
+Always-Free-eligible Oracle Cloud VM using
+deploy\compose.vercel-backend.yaml. See
+deploy\README_VERCEL_ORACLE.md for VM, DNS and Vercel environment setup.
 
-The Render configuration selects manual WhatsApp handling and does not require
-OpenWA. Messages can be prepared or marked complete manually; automatic
-WhatsApp sending is not available in this configuration. The backend needs a
-persistent plan and disk for its SQLite database and scheduled-message worker.
-Never put backend credentials in Vercel frontend code.
+Set SIBI_API_URL in the Vercel project's Production environment to the backend
+HTTPS origin (for example https://api.sibisportsclub.com), then redeploy. The
+backend uses WHATSAPP_PROVIDER=manual; automatic WhatsApp delivery is disabled,
+but messages can be prepared for manual handling.
+
+Vercel can also host serverless backends, but this app's existing SQLite file,
+database-backed sessions and always-running scheduler cannot be moved there
+unchanged. Converting it to serverless requires a persistent database and
+scheduled-job redesign. Do not put backend credentials in Vercel frontend code
+or commit Admin\.env.
