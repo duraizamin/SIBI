@@ -14,6 +14,8 @@ The packaged build already contains the tested dependencies. No `npm install` is
 - No separate Payments, Reminders or Announcements admin tabs.
 - Compact centered clickable KPI dashboard with live filtered destinations.
 - Member registration with optional email, plan, membership status, height, weight, renewal date, profile photo, generated member ID and temporary password.
+- A shared sign-in page routes administrators to the admin workspace and members to their personal dashboard using email/member ID and password.
+- Member dashboards display account, membership, payment, contact and personal fitness details.
 - Reliable member refresh/create/edit workflows.
 - Payment recording inside User Details with payment-mode filters and completed/pending/failed status.
 - Member Edit can update member information and the latest payment status.
