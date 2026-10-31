@@ -16,6 +16,7 @@ The packaged build already contains the tested dependencies. No `npm install` is
 - Administrator-created member accounts with optional email, plan, membership status, height, weight, renewal date, profile photo, generated member ID and temporary password; public self-registration is disabled.
 - A shared sign-in page routes administrators to the admin workspace and members to their personal dashboard using email/member ID and password.
 - Member dashboards display account, membership, payment, contact and personal fitness details.
+- Members and administrators can edit age, gender, fitness goals and emergency contact information; members can change their password after verifying the current password.
 - Reliable member refresh/create/edit workflows.
 - Payment recording inside User Details with payment-mode filters and completed/pending/failed status.
 - Member Edit can update member information and the latest payment status.
