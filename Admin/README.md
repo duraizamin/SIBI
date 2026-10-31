@@ -13,7 +13,7 @@ The packaged build already contains the tested dependencies. No `npm install` is
 - User Details replaces Members in admin navigation.
 - No separate Payments, Reminders or Announcements admin tabs.
 - Compact centered clickable KPI dashboard with live filtered destinations.
-- Member registration with optional email, plan, membership status, height, weight, renewal date, profile photo, generated member ID and temporary password.
+- Administrator-created member accounts with optional email, plan, membership status, height, weight, renewal date, profile photo, generated member ID and temporary password; public self-registration is disabled.
 - A shared sign-in page routes administrators to the admin workspace and members to their personal dashboard using email/member ID and password.
 - Member dashboards display account, membership, payment, contact and personal fitness details.
 - Reliable member refresh/create/edit workflows.
