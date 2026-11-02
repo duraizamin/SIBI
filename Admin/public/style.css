@@ -584,9 +584,13 @@ body.admin-page>.auth-wrap>.wrap{width:100%;display:flex;align-items:center;just
 .progress-history-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 14px}
 .progress-history-heading h3{margin:5px 0 0;font-size:18px}
 .progress-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;min-width:0}
-.progress-card{min-width:0;overflow:hidden;padding:0;border:1px solid var(--line);border-radius:12px;background:#0d1117}
+.progress-card{position:relative;min-width:0;overflow:hidden;padding:0;border:1px solid var(--line);border-radius:12px;background:#0d1117}
 .progress-card:hover{transform:none;border-color:#485362;box-shadow:none}
 .progress-card img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#090c11}
+.progress-remove{position:absolute;top:9px;right:9px;display:grid;width:34px;height:34px;place-items:center;padding:0;border:1px solid #ffffff55;border-radius:50%;background:#090b0fdd;color:#fff;font-size:23px;line-height:1;opacity:0;transform:scale(.9);transition:opacity .16s ease,transform .16s ease}
+.progress-card:hover .progress-remove,.progress-remove:focus-visible{opacity:1;transform:scale(1)}
+.progress-remove:hover{border-color:#ff8a80;background:#a42323;color:#fff}
+.progress-remove:disabled{cursor:wait;opacity:1}
 .progress-card-content{padding:12px}
 .progress-card-content strong{font-size:12px;line-height:1.5}
 .progress-card-content p{margin:7px 0 0;color:#c3cad4;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
@@ -634,6 +638,9 @@ body.admin-page>.auth-wrap>.wrap{width:100%;display:flex;align-items:center;just
   .member-plan-form>.btn,.progress-upload>.btn,.member-form-actions>.btn,.member-password-actions>.btn{width:100%}
   .member-form-actions,.member-password-actions{align-items:stretch;flex-direction:column;gap:10px}
 }
+@media(hover:none){
+  .progress-remove{opacity:1;transform:none}
+}
 @media(prefers-reduced-motion:reduce){
-  .member-nav a{transition:none}
+  .member-nav a,.progress-remove{transition:none}
 }

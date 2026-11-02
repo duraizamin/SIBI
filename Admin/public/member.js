@@ -51,6 +51,7 @@ async function loadProgress() {
     ? entries.map(entry => `
       <article class="card progress-card">
         <img src="${safe(entry.image_data)}" alt="Progress photo from ${safe(formatProgressDate(entry.created_at))}">
+        <button class="progress-remove" type="button" data-progress-delete="${safe(entry.id)}" aria-label="Remove progress photo from ${safe(formatProgressDate(entry.created_at))}" title="Remove photo">×</button>
         <div class="progress-card-content">
           <strong>${safe(formatProgressDate(entry.created_at))}</strong>
           ${entry.note ? `<p>${safe(entry.note)}</p>` : ""}
@@ -313,6 +314,21 @@ $("progressForm").addEventListener("submit", async event => {
   } catch (error) {
     message.textContent = error.message;
   } finally {
+    button.disabled = false;
+  }
+});
+
+$("progressEntries").addEventListener("click", async event => {
+  const button = event.target.closest("[data-progress-delete]");
+  if (!button || !window.confirm("Remove this progress photo? This cannot be undone.")) return;
+  button.disabled = true;
+  $("progressMessage").textContent = "Removing progress photo…";
+  try {
+    await api(`/api/member/progress/${encodeURIComponent(button.dataset.progressDelete)}`, { method: "DELETE" });
+    await loadProgress();
+    $("progressMessage").textContent = "Progress photo removed.";
+  } catch (error) {
+    $("progressMessage").textContent = error.message;
     button.disabled = false;
   }
 });

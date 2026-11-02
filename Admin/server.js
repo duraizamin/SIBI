@@ -262,6 +262,14 @@ if(!/^data:image\/(?:png|jpe?g|webp);base64,[A-Za-z0-9+/]+={0,2}$/i.test(image))
 const entry=db.prepare("INSERT INTO member_progress_photos(user_id,image_data,note) VALUES(?,?,?)").run(req.user.id,image,note);
 res.status(201).json({entry:db.prepare("SELECT id,image_data,note,created_at FROM member_progress_photos WHERE id=? AND user_id=?").get(entry.lastInsertRowid,req.user.id)});
 });
+app.delete("/api/member/progress/:id",auth,(req,res)=>{
+if(req.user.role!=="member")return res.status(403).json({error:"Member account required."});
+const id=Number(req.params.id);
+if(!Number.isSafeInteger(id)||id<1)return res.status(400).json({error:"Progress photo not found."});
+const result=db.prepare("DELETE FROM member_progress_photos WHERE id=? AND user_id=?").run(id,req.user.id);
+if(!result.changes)return res.status(404).json({error:"Progress photo not found."});
+res.json({ok:true});
+});
 app.patch("/api/member/plan",auth,(req,res)=>{if(req.user.role!=="member")return res.status(403).json({error:"Member account required."});const plan=clean(req.body.plan,60);if(plan==="Custom"&&req.user.plan==="Custom")return res.json({user:req.user,message:"Your custom package selection is unchanged."});if(!validMembershipPlan(plan))return res.status(400).json({error:"Select a valid membership plan from the available packages."});db.prepare("UPDATE users SET plan=?,custom_plan_details='',custom_plan_amount_paise=NULL,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?").run(plan,req.user.id);res.json({user:me(req),message:"Package selection saved."})});
 app.get("/api/admin/dashboard",admin,(req,res)=>res.json({admin:req.user,stats:{members:db.prepare("SELECT COUNT(*) n FROM users WHERE role='member' AND archived_at IS NULL").get().n,activeMembers:db.prepare("SELECT COUNT(*) n FROM users WHERE role='member' AND archived_at IS NULL AND status='active'").get().n,pendingMembers:db.prepare("SELECT COUNT(*) n FROM users WHERE role='member' AND archived_at IS NULL AND status='pending'").get().n,pausedMembers:db.prepare("SELECT COUNT(*) n FROM users WHERE role='member' AND archived_at IS NULL AND status='paused'").get().n,trainers:db.prepare("SELECT COUNT(*) n FROM trainers WHERE active=1").get().n,enquiries:db.prepare("SELECT COUNT(*) n FROM enquiries WHERE status='new'").get().n,pendingPayments:db.prepare("SELECT COUNT(*) n FROM payments WHERE status='pending'").get().n,dueSoon:db.prepare("SELECT COUNT(*) n FROM users WHERE role='member' AND archived_at IS NULL AND membership_due_date IS NOT NULL AND date(membership_due_date)<=date('now','+7 day')").get().n}}));
 app.post("/api/admin/members",admin,async(req,res)=>{
