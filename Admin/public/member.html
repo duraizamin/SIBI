@@ -1,9 +1,279 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Member Dashboard | Sibi Sports Club</title><link rel="stylesheet" href="/style.css"><style>.member-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}.member-panel{padding:clamp(18px,3vw,28px)}.member-panel h2{margin:10px 0}.member-profile-form{margin-top:15px}.member-profile-form .btn{margin-top:8px}.member-metric strong{font-size:clamp(18px,2vw,26px);line-height:1.3;overflow-wrap:anywhere}.member-table{margin-top:16px}#planForm{display:grid;gap:12px}#planForm>.btn{justify-self:start;margin:0}.inbox-item{padding:18px 0;border-bottom:1px solid var(--line)}.inbox-item:last-child{border-bottom:0}.inbox-image{width:100%;max-height:280px;object-fit:cover;border-radius:12px;margin-top:12px}@media(max-width:760px){.member-grid{grid-template-columns:1fr}}</style></head><body>
-<header class="topbar"><div class="wrap nav"><a class="brand brand-image" href="/"><img src="/logo.svg" alt="Sibi Sports Club"></a><div class="actions"><a class="btn ghost" href="/">Public website</a><button class="btn primary" id="logout">Sign out</button></div></div></header>
-<main class="auth-wrap"><div class="wrap"><div class="dash-head"><div><div class="eyebrow">Member area</div><h1 style="font-size:clamp(35px,5vw,55px);margin:10px 0">Your training.<br><span>Your progress.</span></h1><p class="muted">Your membership, payments and messages in one place.</p></div></div><div id="memberNotice" class="notice">Loading your membership details…</div><div id="memberPanel" class="hidden">
-<div class="grid dash-grid"><article class="card metric member-metric"><span>Unique member ID</span><strong id="memberId">—</strong><span>Use this ID for club support</span></article><article class="card metric member-metric"><span>Member name</span><strong id="memberName">—</strong><span id="memberEmail"></span></article><article class="card metric member-metric"><span>Current package</span><strong id="memberPlan">—</strong><span id="memberStatus">—</span></article><article class="card metric member-metric"><span>Renewal / due date</span><strong id="memberDue">Not set</strong><span id="memberPaymentStatus">Payment: pending</span></article><article class="card metric member-metric"><span>Age</span><strong id="memberAge">—</strong></article><article class="card metric member-metric"><span>Gender</span><strong id="memberGender">—</strong></article><article class="card metric member-metric"><span>Fitness goals</span><strong id="memberGoal">—</strong></article><article class="card metric member-metric"><span>Emergency contact</span><strong id="memberEmergencyContact">—</strong></article></div>
-<div class="member-grid"><section class="card member-panel"><div class="eyebrow">Membership</div><h2>Choose your package</h2><p class="muted">Select the package you want and the club team can confirm your membership.</p><form id="planForm"><div class="field"><label for="plan">Select plan</label><select id="plan"><option value="Strength Training · 1 Month">Strength Training · 1 Month — ₹900</option><option value="Strength Training · 3 Months">Strength Training · 3 Months — ₹2,000</option><option value="Strength Training · 6 Months">Strength Training · 6 Months — ₹4,000</option><option value="Strength Training · 1 Year">Strength Training · 1 Year — ₹5,999</option><option value="Strength &amp; Cardio · 1 Month">Strength &amp; Cardio · 1 Month — ₹1,400</option><option value="Strength &amp; Cardio · 3 Months">Strength &amp; Cardio · 3 Months — ₹3,500</option><option value="Strength &amp; Cardio · 6 Months">Strength &amp; Cardio · 6 Months — ₹6,000</option><option value="Strength &amp; Cardio · 1 Year">Strength &amp; Cardio · 1 Year — ₹9,999</option><option value="Personal Training">Personal Training — enquire for pricing</option><option value="Cardio">Cardio — enquire for pricing</option><optgroup label="Existing legacy plans"><option value="Basic">Legacy: Basic</option><option value="Premium">Legacy: Premium</option><option value="Elite">Legacy: Elite</option></optgroup></select></div><button class="btn primary">Save package selection</button></form><p class="small" id="planMessage"></p></section><section class="card member-panel"><div class="eyebrow">Your profile</div><h2>Personal and contact details</h2><form id="profileForm" class="form-grid member-profile-form"><div class="field"><label for="profileName">Full name</label><input id="profileName" required maxlength="100"></div><div class="field"><label for="profileEmail">Email (optional)</label><input id="profileEmail" type="email" maxlength="160"></div><div class="field"><label for="profilePhone">WhatsApp / phone</label><input id="profilePhone" required minlength="7" maxlength="30"></div><div class="field"><label for="profileAddress">Address</label><input id="profileAddress" maxlength="250"></div><div class="field"><label for="profileAge">Age</label><input id="profileAge" type="number" min="12" max="100"></div><div class="field"><label for="profileGender">Gender</label><select id="profileGender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div><div class="field full"><label for="profileGoal">Fitness goal</label><textarea id="profileGoal" maxlength="300" placeholder="Your training and fitness goals"></textarea></div><div class="field full"><label for="profileEmergencyContact">Emergency contact</label><input id="profileEmergencyContact" maxlength="30" inputmode="tel"></div><div class="field full"><button class="btn primary">Save personal details</button></div></form><p class="small" id="profileMessage" role="status"></p></section></div>
-<section class="card member-panel" style="margin-top:20px"><div class="eyebrow">Account security</div><h2>Change your password</h2><form id="passwordForm" class="form-grid member-profile-form"><div class="field"><label for="currentPassword">Current password</label><input id="currentPassword" type="password" autocomplete="current-password" required></div><div class="field"><label for="newPassword">New password</label><input id="newPassword" type="password" autocomplete="new-password" minlength="8" required></div><div class="field"><label for="confirmPassword">Confirm new password</label><input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required></div><div class="field full"><button class="btn primary">Update password</button></div></form><p class="small" id="passwordMessage" role="status"></p></section>
-<section class="card member-panel" style="margin-top:20px"><div class="eyebrow">Messages</div><h2>Messages from Sibi Sports Club</h2><div id="memberMessages"><p class="muted">Loading messages…</p></div></section>
-<section class="card member-panel" style="margin-top:20px"><div class="eyebrow">Payments</div><h2>Payment history</h2><div class="table-wrap member-table"><table><thead><tr><th>Date</th><th>Reference</th><th>Amount</th><th>Method</th><th>Status</th><th>Notes</th></tr></thead><tbody id="memberPayments"><tr><td colspan="6">Loading payment history…</td></tr></tbody></table></div><a class="btn ghost" href="/#contact" style="margin-top:16px">Contact billing support ↗</a></section>
-</div></div></main><script src="/member.js?v=sibi-custom-plan-20261019"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#090b0f">
+  <title>Member Dashboard | Sibi Sports Club</title>
+  <link rel="stylesheet" href="/style.css?v=member-workspace-20261102">
+</head>
+<body class="member-page">
+  <header class="topbar member-topbar">
+    <div class="wrap nav">
+      <a class="brand brand-image" href="/"><img src="/logo.svg" alt="Sibi Sports Club"></a>
+      <div class="actions">
+        <a class="btn ghost member-website-link" href="/">Public website</a>
+        <button class="btn primary" id="logout" type="button">Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="member-main">
+    <div class="wrap member-container">
+      <section class="member-welcome" id="overview">
+        <div>
+          <div class="eyebrow">Sibi Sports Club · Member workspace</div>
+          <h1>Welcome back, <span id="memberName">member</span></h1>
+          <p id="memberEmail" class="muted member-welcome-email"></p>
+        </div>
+        <a class="btn ghost member-support-link" href="/#contact">Contact the club</a>
+      </section>
+
+      <nav class="member-nav" aria-label="Member workspace sections">
+        <a href="#overview">Overview</a>
+        <a href="#progress">Progress photos</a>
+        <a href="#membership">Membership</a>
+        <a href="#profile">Profile &amp; DOB</a>
+        <a href="#security">Password</a>
+        <a href="#messages">Messages</a>
+        <a href="#payments">Payments</a>
+      </nav>
+
+      <div id="memberNotice" class="notice member-notice" role="status">Loading your secure member workspace…</div>
+
+      <div id="memberPanel" class="hidden member-workspace">
+        <section class="member-overview-grid" aria-label="Membership overview">
+          <article class="card member-summary-card">
+            <span class="member-summary-label">Member ID</span>
+            <strong id="memberId">—</strong>
+            <span class="member-summary-foot">Your club account reference</span>
+          </article>
+          <article class="card member-summary-card">
+            <span class="member-summary-label">Date of birth</span>
+            <strong id="memberDob">Not provided</strong>
+            <span class="member-summary-foot">Your saved profile date</span>
+          </article>
+          <article class="card member-summary-card">
+            <span class="member-summary-label">Current package</span>
+            <strong id="memberPlan">—</strong>
+            <span class="member-summary-foot" id="memberStatus">—</span>
+          </article>
+          <article class="card member-summary-card">
+            <span class="member-summary-label">Renewal date</span>
+            <strong id="memberDue">Not set</strong>
+            <span class="member-summary-foot" id="memberPaymentStatus">Latest payment: pending</span>
+          </article>
+        </section>
+
+        <section class="card member-panel" id="progress">
+          <div class="member-panel-heading">
+            <div>
+              <div class="eyebrow">Your training journey</div>
+              <h2>Progress photos</h2>
+              <p class="muted">Add regular check-ins to build a private visual record of your progress.</p>
+            </div>
+            <span class="progress-privacy"><span aria-hidden="true">🔒</span> Private to your account</span>
+          </div>
+          <div class="progress-reminder" id="progressReminder" aria-live="polite">Checking your latest update…</div>
+          <div class="progress-layout">
+            <form id="progressForm" class="progress-upload">
+              <div class="progress-upload-title">Add a check-in</div>
+              <p class="small">Choose a recent photo and optionally add a note about your workout or milestone.</p>
+              <label class="field progress-file-field" for="progressPhoto">
+                <span>Progress photo</span>
+                <input id="progressPhoto" type="file" accept="image/png,image/jpeg,image/webp" required>
+                <small class="small">PNG, JPG or WebP · maximum 1.5 MB</small>
+              </label>
+              <div id="progressPreview" class="progress-preview hidden">
+                <img id="progressPreviewImage" alt="Preview of your selected progress photo">
+                <span>Photo preview</span>
+              </div>
+              <label class="field progress-note-field" for="progressNote">
+                <span>Check-in note <span class="small">(optional)</span></span>
+                <textarea id="progressNote" maxlength="300" placeholder="Workout, milestone or how you feel"></textarea>
+              </label>
+              <button class="btn primary" type="submit">Save progress photo</button>
+              <p class="small member-form-message" id="progressMessage" role="status"></p>
+            </form>
+
+            <div class="progress-history">
+              <div class="progress-history-heading">
+                <div>
+                  <div class="eyebrow">Your personal record</div>
+                  <h3>Previous check-ins</h3>
+                </div>
+                <button class="btn ghost" type="button" id="refreshProgress">Refresh</button>
+              </div>
+              <div class="progress-grid" id="progressEntries">
+                <p class="progress-empty muted">Loading your private progress journal…</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card member-panel" id="membership">
+          <div class="member-panel-heading">
+            <div>
+              <div class="eyebrow">Membership</div>
+              <h2>Choose your package</h2>
+              <p class="muted">Select a package and the club team can confirm your membership.</p>
+            </div>
+          </div>
+          <form id="planForm" class="member-plan-form">
+            <div class="field">
+              <label for="plan">Available package</label>
+              <select id="plan">
+                <option value="Strength Training · 1 Month">Strength Training · 1 Month — ₹900</option>
+                <option value="Strength Training · 3 Months">Strength Training · 3 Months — ₹2,000</option>
+                <option value="Strength Training · 6 Months">Strength Training · 6 Months — ₹4,000</option>
+                <option value="Strength Training · 1 Year">Strength Training · 1 Year — ₹5,999</option>
+                <option value="Strength &amp; Cardio · 1 Month">Strength &amp; Cardio · 1 Month — ₹1,400</option>
+                <option value="Strength &amp; Cardio · 3 Months">Strength &amp; Cardio · 3 Months — ₹3,500</option>
+                <option value="Strength &amp; Cardio · 6 Months">Strength &amp; Cardio · 6 Months — ₹6,000</option>
+                <option value="Strength &amp; Cardio · 1 Year">Strength &amp; Cardio · 1 Year — ₹9,999</option>
+                <option value="Personal Training">Personal Training — enquire for pricing</option>
+                <option value="Cardio">Cardio — enquire for pricing</option>
+                <optgroup label="Existing legacy plans">
+                  <option value="Basic">Legacy: Basic</option>
+                  <option value="Premium">Legacy: Premium</option>
+                  <option value="Elite">Legacy: Elite</option>
+                </optgroup>
+              </select>
+            </div>
+            <button class="btn primary" type="submit">Save package selection</button>
+          </form>
+          <p class="small member-form-message" id="planMessage" role="status"></p>
+        </section>
+
+        <section class="card member-panel" id="profile">
+          <div class="member-panel-heading">
+            <div>
+              <div class="eyebrow">Your profile</div>
+              <h2>Personal details</h2>
+              <p class="muted">Keep your contact and fitness information up to date.</p>
+            </div>
+          </div>
+          <form id="profileForm" class="form-grid member-profile-form">
+            <div class="field">
+              <label for="profileName">Full name</label>
+              <input id="profileName" required maxlength="100" autocomplete="name">
+            </div>
+            <div class="field">
+              <label for="profileEmail">Email <span class="small">(optional)</span></label>
+              <input id="profileEmail" type="email" maxlength="160" autocomplete="email">
+            </div>
+            <div class="field">
+              <label for="profilePhone">WhatsApp / phone</label>
+              <input id="profilePhone" type="tel" required minlength="7" maxlength="30" autocomplete="tel">
+            </div>
+            <div class="field">
+              <label for="profileAddress">Address</label>
+              <input id="profileAddress" maxlength="250" autocomplete="street-address">
+            </div>
+            <div class="field">
+              <label for="profileDateOfBirth">Date of birth</label>
+              <input id="profileDateOfBirth" type="date">
+            </div>
+            <div class="field">
+              <label for="profileAge">Age</label>
+              <input id="profileAge" type="number" min="12" max="100" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label for="profileGender">Gender</label>
+              <select id="profileGender">
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="profileEmergencyContact">Emergency contact</label>
+              <input id="profileEmergencyContact" maxlength="30" inputmode="tel">
+            </div>
+            <div class="field full">
+              <label for="profileGoal">Fitness goal</label>
+              <textarea id="profileGoal" maxlength="300" placeholder="Your training and fitness goals"></textarea>
+            </div>
+            <div class="field full member-form-actions">
+              <button class="btn primary" type="submit">Save profile changes</button>
+              <p class="small member-form-message" id="profileMessage" role="status"></p>
+            </div>
+          </form>
+        </section>
+
+        <section class="card member-panel" id="security">
+          <div class="member-panel-heading">
+            <div>
+              <div class="eyebrow">Account security</div>
+              <h2>Update your password</h2>
+              <p class="muted">Confirm your current password before choosing a new one.</p>
+            </div>
+          </div>
+          <form id="passwordForm" class="member-password-form">
+            <div class="field">
+              <label for="currentPassword">Current password</label>
+              <input id="currentPassword" type="password" autocomplete="current-password" required>
+            </div>
+            <div class="field">
+              <label for="newPassword">New password</label>
+              <input id="newPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+              <small class="small">Use at least 8 characters.</small>
+            </div>
+            <div class="field">
+              <label for="confirmPassword">Confirm new password</label>
+              <input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+            </div>
+            <div class="field member-password-actions">
+              <button class="btn primary" type="submit">Update password</button>
+              <p class="small member-form-message" id="passwordMessage" role="status"></p>
+            </div>
+          </form>
+        </section>
+
+        <section class="card member-panel" id="messages">
+          <div class="member-panel-heading">
+            <div>
+              <div class="eyebrow">Club communication</div>
+              <h2>Messages</h2>
+              <p class="muted">Updates and messages from Sibi Sports Club.</p>
+            </div>
+          </div>
+          <div id="memberMessages" class="member-messages">
+            <p class="muted">Loading messages…</p>
+          </div>
+        </section>
+
+        <section class="card member-panel" id="payments">
+          <div class="member-panel-heading">
+            <div>
+              <div class="eyebrow">Account history</div>
+              <h2>Payment history</h2>
+              <p class="muted">Review payments recorded for your membership.</p>
+            </div>
+          </div>
+          <div class="table-wrap member-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Reference</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="memberPayments">
+                <tr><td colspan="6">Loading payment history…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <a class="btn ghost member-billing-link" href="/#contact">Contact billing support ↗</a>
+        </section>
+      </div>
+    </div>
+  </main>
+  <script src="/member.js?v=member-workspace-20261102"></script>
+</body>
+</html>
