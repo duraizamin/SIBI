@@ -222,6 +222,7 @@ function displayUser(u){if(!u)return u;return {...u,email:(u.email||"").endsWith
 function me(req){return req.session.userId?displayUser(db.prepare("SELECT id,member_id,name,email,phone,address,role,plan,custom_plan_details,custom_plan_amount_paise,status,membership_due_date,height_cm,weight_kg,profile_photo,age,date_of_birth,gender,fitness_goal,preferred_membership,emergency_contact,created_at FROM users WHERE id=? AND (role='admin' OR archived_at IS NULL)").get(req.session.userId)||null):null}
 function auth(req,res,next){const u=me(req);if(!u)return res.status(401).json({error:"Please sign in to continue."});req.user=u;next()}
 function admin(req,res,next){const u=me(req);if(!u||u.role!=="admin")return res.status(403).json({error:"Administrator access required."});req.user=u;next()}
+function normalizePhoneDigits(value){return String(value||"").replace(/\D/g,"")}
 function makeMemberId(){const year=new Date().getUTCFullYear(),prefix=`SSC-${year}-`,last=db.prepare("SELECT member_id FROM users WHERE member_id LIKE ? ORDER BY id DESC LIMIT 1").get(`${prefix}%`);return `${prefix}${String(last?Number(last.member_id.slice(prefix.length))+1:1).padStart(6,"0")}`}
 const createMember=db.transaction(data=>{
   const id=makeMemberId(),email=normalizeEmail(data.email,id);
@@ -231,7 +232,23 @@ const createMember=db.transaction(data=>{
 });
 app.get("/api/health",(req,res)=>res.json({ok:true,timezone:process.env.APP_TIMEZONE||"Asia/Kolkata"}));
 app.post("/api/auth/register",admin,async(req,res)=>{const name=clean(req.body.name,100),email=clean(req.body.email,160).toLowerCase(),phone=clean(req.body.phone,30),address=clean(req.body.address,300),age=Number(req.body.age),dateOfBirth=clean(req.body.date_of_birth,10),gender=clean(req.body.gender,30),fitness_goal=Array.isArray(req.body.fitness_goal)?req.body.fitness_goal.map(v=>clean(v,60)).filter(Boolean).join(", "):clean(req.body.fitness_goal,300),preferred_membership=clean(req.body.preferred_membership,100),emergency_contact=clean(req.body.emergency_contact,30),plan=membershipPlanFromPreference(preferred_membership);if(name.length<2||phone.length<7||!Number.isInteger(age)||age<12||age>100||!dateOfBirth||!validDateOfBirth(dateOfBirth)||!gender||!address||!fitness_goal||!plan||emergency_contact.length<7||email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return res.status(400).json({error:"Please enter a valid date of birth and complete your name, phone, address, fitness goal, preferred membership and emergency contact. Email is optional."});try{const tempPassword=`Sibi@${Math.random().toString(36).slice(2,8).toUpperCase()}!`;const user=createMember({name,email,phone,address,age,date_of_birth:dateOfBirth,gender,fitness_goal,preferred_membership,emergency_contact,plan,status:"pending",hash:await bcrypt.hash(tempPassword,12)});res.status(201).json({user,temporaryPassword:tempPassword,message:"Registration submitted successfully."})}catch(e){if(String(e.code||"").startsWith("SQLITE_CONSTRAINT"))return res.status(409).json({error:"An account with that email or phone already exists."});console.error(e);res.status(500).json({error:"Could not complete registration."})}});
-app.post("/api/auth/login",async(req,res)=>{const identifier=clean(req.body.email||req.body.identifier,160).toLowerCase(),password=typeof req.body.password==="string"?req.body.password:"",u=db.prepare("SELECT * FROM users WHERE (lower(email)=? OR lower(member_id)=?) AND (role='admin' OR archived_at IS NULL)").get(identifier,identifier);if(!u||!(await bcrypt.compare(password,u.password_hash)))return res.status(401).json({error:"Member ID/email or password is incorrect."});req.session.userId=u.id;const user=me(req);res.json({user,redirect:user.role==="admin"?"/admin.html":"/member.html"})});
+app.post("/api/auth/login",async(req,res)=>{
+  const identifier=clean(req.body.email||req.body.identifier||"",160).trim();
+  const password=typeof req.body.password === "string" ? req.body.password : "";
+  const normalizedIdentifier=identifier.toLowerCase();
+  const normalizedPhone=normalizePhoneDigits(identifier);
+  const users=db.prepare("SELECT * FROM users WHERE archived_at IS NULL AND (role='admin' OR role='member')").all();
+  const user=users.find(row => {
+    const emailMatch=row.email && row.email.toLowerCase() === normalizedIdentifier;
+    const memberIdMatch=row.member_id && row.member_id.toLowerCase() === normalizedIdentifier;
+    const phoneMatch=Boolean(normalizedPhone) && normalizePhoneDigits(row.phone) === normalizedPhone;
+    return emailMatch || memberIdMatch || phoneMatch;
+  });
+  if(!user||!(await bcrypt.compare(password,user.password_hash)))return res.status(401).json({error:"Email, member ID, registered mobile number, or password is incorrect."});
+  req.session.userId=user.id;
+  const sessionUser=me(req);
+  res.json({user:sessionUser,redirect:sessionUser.role==="admin"?"/admin.html":"/member.html"});
+});
 app.post("/api/auth/logout",(req,res)=>req.session.destroy(e=>{if(e)return res.status(500).json({error:"Could not sign out."});res.clearCookie("sibi.sid",{httpOnly:true,sameSite:"lax",secure:process.env.NODE_ENV==="production"});res.json({ok:true})}));
 app.get("/api/auth/me",auth,(req,res)=>res.json({user:req.user}));
 app.get("/api/trainers",(req,res)=>res.json({trainers:db.prepare("SELECT id,name,specialty,experience_years,bio,certifications,photo_url FROM trainers WHERE active=1 ORDER BY id").all()}));

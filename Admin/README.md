@@ -14,7 +14,7 @@ The packaged build already contains the tested dependencies. No `npm install` is
 - No separate Payments, Reminders or Announcements admin tabs.
 - Compact centered clickable KPI dashboard with live filtered destinations.
 - Administrator-created member accounts with optional email, required date of birth, plan, membership status, height, weight, renewal date, profile photo, generated member ID and temporary password; public self-registration is disabled.
-- A shared sign-in page routes administrators to the admin workspace and members to their personal dashboard using email/member ID and password.
+- A shared sign-in page routes administrators to the admin workspace and members to their personal dashboard using email, member ID, or registered mobile number and password.
 - Member dashboards display account, membership, payment, contact and personal fitness details.
 - Members and administrators can edit date of birth, age, gender, fitness goals and emergency contact information; members can change their password after verifying the current password.
 - Members can keep a private, member-only progress-photo journal with a weekly check-in prompt.
