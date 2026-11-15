@@ -42,14 +42,15 @@ Never publish Admin\.env, admin credentials, or session secrets. Configure uniqu
 
 WHATSAPP MESSAGE DELIVERY SETUP
 -------------------------------
-The default deployment uses manual WhatsApp handling and does not need OpenWA.
-Messages can be prepared or marked complete manually; automatic sending is
-disabled. The Vercel website uses the persistent backend described below.
+The Vercel backend supports immediate WhatsApp sending through Meta Cloud API
+when configured. Without Meta credentials, messages can be prepared for manual
+sending. Scheduled messages remain paused on Vercel until an always-on
+scheduler is configured.
 
-The Vercel deployment does not configure OpenWA or Meta WhatsApp credentials.
-The separate WhatsApp guide is for local or legacy deployments only. Never put
-provider credentials in Vercel frontend code, commit Admin\.env, or expose
-provider keys.
+The Vercel deployment does not include Meta credentials by default. Follow
+HOSTING_WHATSAPP_SETUP.txt to create your Meta app and configure its server-side
+environment variables. Never put provider credentials in frontend code, commit
+Admin\.env, or expose provider keys.
 
 VERCEL FRONTEND + NEON DATABASE
 --------------------------------
@@ -72,11 +73,17 @@ To configure a fresh deployment:
 4. Verify https://YOUR-DOMAIN/api/health reports database connected, then sign
    in with the configured admin email and password.
 
-OpenWA, Meta WhatsApp delivery, webhook handling and automatic scheduled
-WhatsApp sending are disabled on Vercel. Admin/member sign-in and the rest of
-the application remain enabled. Messages can be prepared for manual sending;
-scheduled items remain saved but paused and are never marked sent automatically.
-Local Windows use continues to run the existing SQLite Express server.
+OpenWA and WhatsApp webhooks are not configured on Vercel. Meta Cloud API
+immediate sending and retries are available after setting
+WHATSAPP_PROVIDER=cloud_api, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID and
+WHATSAPP_GRAPH_VERSION=v26.0 in Vercel's protected environment settings.
+Business-initiated messages outside the 24-hour service window need a Meta
+approved template; configure WHATSAPP_TEMPLATE_NAME and
+WHATSAPP_TEMPLATE_LANGUAGE on the server. Scheduled messages remain saved but
+paused on Vercel. Precise automatic scheduling needs an always-on worker or a
+Vercel plan that supports per-minute cron jobs; Hobby cron runs only once per
+day and can be delayed by up to 59 minutes. Local Windows use continues to run
+the SQLite Express server and its scheduler while the computer is on.
 
 For the public domain, point the GoDaddy DNS records to the values shown under
 Vercel > Project Settings > Domains. Do not set SIBI_API_URL: Vercel serves

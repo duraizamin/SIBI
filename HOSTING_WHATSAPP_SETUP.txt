@@ -100,9 +100,66 @@ review OpenWA's current risk guidance, and keep a fallback for important
 communications:
 https://github.com/rmyndharis/OpenWA#safe-sending-guidelines
 
-OPTIONAL OFFICIAL META CLOUD API
+OFFICIAL META WHATSAPP CLOUD API
 --------------------------------
-To use Meta Cloud API instead, set WHATSAPP_PROVIDER=cloud_api and configure
-WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID on the Sibi server. Existing
-Meta template and webhook settings remain available. Never place provider
-credentials in frontend files, commit Admin\.env, or share API keys publicly.
+Meta Cloud API is the official WhatsApp Business Platform. The Sibi Vercel
+backend supports immediate sends and retries through this API. Scheduled
+messages remain paused on Vercel until an always-on scheduler is configured.
+The local Windows/Node server can send both immediate and scheduled messages
+while it is running.
+
+CREATE AND PREPARE YOUR META ACCOUNT
+-----------------------------------
+You must create and verify Meta accounts yourself; never send passwords,
+verification codes or access tokens in chat.
+
+1. Sign in to https://developers.facebook.com/ with your own Facebook account
+   and complete Meta's developer registration and any requested identity checks.
+2. Create a Meta app for business messaging, add the WhatsApp product, and
+   connect or create the club's WhatsApp Business Account (WABA).
+3. In WhatsApp > API Setup, add and verify the club's business phone number.
+   Record its Phone Number ID. Use the temporary access token only to test.
+4. For production, create a system user in Meta Business Settings, assign it
+   the app and WABA, and generate a long-lived token with the
+   whatsapp_business_messaging permission. Store that token only in server
+   environment variables. Complete any business verification, display-name,
+   phone-number and payment setup Meta requests.
+5. To message people outside Meta's 24-hour customer-service window, create
+   and get approval for a WhatsApp message template. If configuring
+   WHATSAPP_TEMPLATE_NAME, the approved template must have exactly one body
+   variable ({{1}}); set its exact language code in WHATSAPP_TEMPLATE_LANGUAGE.
+   The configured Sibi message is sent as that variable. Meta may reject
+   promotional text in a template approved for another category.
+
+CONFIGURE SIBI ON VERCEL
+------------------------
+In Vercel > Project Settings > Environment Variables, set these values for
+Production (and Preview if you test there), then redeploy:
+
+    WHATSAPP_PROVIDER=cloud_api
+    WHATSAPP_ACCESS_TOKEN=<server-side system-user token>
+    WHATSAPP_PHONE_NUMBER_ID=<Meta phone number ID>
+    WHATSAPP_GRAPH_VERSION=v26.0
+    WHATSAPP_TEMPLATE_NAME=<approved template name>
+    WHATSAPP_TEMPLATE_LANGUAGE=en_US
+
+The template name and language are optional only for recipients who messaged
+the business within the last 24 hours. Never commit these values or put them in
+frontend JavaScript. After redeploy, open Admin > Message Center and confirm
+the sender status says Meta Cloud API is configured. Test Send now with one
+consenting recipient before sending to a larger group. Vercel immediate sends
+are limited to 25 recipients per request; split larger sends into batches.
+Delivery history records Meta acceptance, not proof that a recipient received
+or read the message. Failed messages can be retried from Delivery history.
+
+Vercel does not currently run the Sibi scheduled-message worker: scheduled
+reminders stay paused there even when Meta is configured. The local server's
+scheduler needs the server to remain running; precise hosted scheduled sending
+needs an always-on worker or an appropriately configured Vercel scheduler.
+Vercel Hobby cron jobs run only once per day with up to 59 minutes of timing
+delay; per-minute scheduling requires a plan that supports it.
+
+For local Windows use, copy Admin\.env.example to Admin\.env and set the same
+provider values there. Keep Admin\.env private. Meta's official setup guides:
+https://developers.facebook.com/docs/whatsapp/cloud-api/get-started
+https://developers.facebook.com/docs/whatsapp/cloud-api/guides/set-up-webhooks

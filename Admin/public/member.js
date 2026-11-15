@@ -42,6 +42,7 @@ function formatProgressDate(value) {
 function showProfile(user) {
   $("memberName").textContent = user.name || "member";
   $("memberEmail").textContent = user.email || "Member account";
+  $("memberRegistrationDate").textContent = displayDate(user.registration_date);
   $("memberDob").textContent = displayDate(user.date_of_birth);
 }
 

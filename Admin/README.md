@@ -13,7 +13,7 @@ The packaged build already contains the tested dependencies. No `npm install` is
 - User Details replaces Members in admin navigation.
 - No separate Payments, Reminders or Announcements admin tabs.
 - Compact centered clickable KPI dashboard with live filtered destinations.
-- Administrator-created member accounts with optional email, required date of birth, plan, membership status, height, weight, renewal date, profile photo, generated member ID and temporary password; public self-registration is disabled.
+- Administrator-created member accounts with optional date of birth, a required registration date, plan-based automatic renewal dates for fixed-term packages, membership status, height, weight, profile photo, generated member ID and temporary password; custom and legacy plans allow a manual renewal date; public self-registration is disabled.
 - A shared sign-in page routes administrators to the admin workspace and members to their personal dashboard using email, member ID, or registered mobile number and password.
 - Member dashboards display account, membership, payment, contact and personal fitness details.
 - Members and administrators can edit date of birth, age, gender, fitness goals and emergency contact information; members can change their password after verifying the current password.
@@ -45,11 +45,13 @@ The Message Center now accepts a CSV exported from User Details. Upload the CSV 
 
 This import does not itself configure WhatsApp credentials. Automatic delivery requires a configured provider; Meta Cloud API templates may be required for business-initiated sends. Test with one consenting recipient first. CSV rows that do not match an existing member are shown as unmatched and are not sent.
 
-## OpenWA sending
+## WhatsApp sending
 
 The message center can send immediate messages and scheduled reminders through an OpenWA gateway. OpenWA is a separate service; set `WHATSAPP_PROVIDER=openwa`, `OPENWA_API_URL`, `OPENWA_API_KEY`, and `OPENWA_SESSION_ID` in the server environment. Use `http://localhost:2785/api` locally. For Sibi hosted on Render, OpenWA can run locally behind a Cloudflare Quick Tunnel; set `OPENWA_API_URL` to the tunnel's current HTTPS URL ending in `/api`. The local computer and tunnel must stay online, and the temporary URL changes when restarted. Never expose the API key in frontend code.
 
 When OpenWA is connected, scheduled messages are sent automatically at their due time. If no provider is configured, the app keeps its manual-send fallback. A send accepted by OpenWA is not proof of delivery. OpenWA uses an unofficial WhatsApp Web client and can carry account or policy risk; send only to opted-in recipients and pace sends. See [HOSTING_WHATSAPP_SETUP.txt](../HOSTING_WHATSAPP_SETUP.txt) for local and hosted instructions. Meta Cloud API remains available with `WHATSAPP_PROVIDER=cloud_api`.
+
+The Vercel backend also supports immediate sends and retries using Meta's official WhatsApp Cloud API. Set `WHATSAPP_PROVIDER=cloud_api`, `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, and `WHATSAPP_GRAPH_VERSION=v26.0` in Vercel's protected environment settings. Send-now is limited to 25 recipients per request. Business-initiated messages outside the 24-hour service window require an approved Meta template; configure `WHATSAPP_TEMPLATE_NAME` and `WHATSAPP_TEMPLATE_LANGUAGE` on the server. Scheduled messages are paused on Vercel and need an always-on scheduler. See [HOSTING_WHATSAPP_SETUP.txt](../HOSTING_WHATSAPP_SETUP.txt) for Meta account setup and deployment steps.
 
 
 Dashboard renewal count now includes all members whose renewal date is past due or falls within the next 7 days. The KPI label is 'Renewals due / overdue'.

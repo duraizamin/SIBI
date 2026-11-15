@@ -553,7 +553,7 @@ body.admin-page>.auth-wrap>.wrap{width:100%;display:flex;align-items:center;just
 .member-nav a:hover,.member-nav a:focus-visible{color:var(--ink);border-color:#ff790080;background:#ff790014}
 .member-notice{margin:12px 0}
 .member-workspace{display:grid;gap:20px;min-width:0}
-.member-overview-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.member-overview-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
 .member-summary-card{display:flex;flex-direction:column;gap:7px;min-width:0;padding:19px 20px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(145deg,#151b24,#10141a);transition:border-color .2s ease}
 .member-summary-card:hover,.member-page .member-panel:hover{transform:none;border-color:var(--line);box-shadow:none}
 .member-summary-label{color:var(--muted);font-size:11px;font-weight:750;letter-spacing:.1em;text-transform:uppercase}
